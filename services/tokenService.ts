@@ -70,16 +70,19 @@ class TokenService {
         let website, twitter, telegram;
         if (Array.isArray(profile.links)) {
           for (const link of profile.links) {
+            const label = link.label ? link.label.toLowerCase() : '';
+            const type = link.type ? link.type.toLowerCase() : '';
             if (
-              (link.label && link.label.toLowerCase() === 'website') ||
-              (link.type && link.type.toLowerCase() === 'website')
+              label.includes('website') || type.includes('website')
             ) {
               website = link.url;
             }
-            if (link.type && link.type.toLowerCase() === 'twitter') {
+            if (
+              label === 'twitter' || label === 'x' || type === 'twitter' || type === 'x'
+            ) {
               twitter = link.url;
             }
-            if (link.type && link.type.toLowerCase() === 'telegram') {
+            if (label === 'telegram' || type === 'telegram') {
               telegram = link.url;
             }
           }

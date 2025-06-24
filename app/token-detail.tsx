@@ -28,13 +28,10 @@ export default function TokenDetailScreen() {
     );
   }
 
-  // Mock chart data for toggles (replace with real data if available)
-  const chartData = {
-    '1H': [10, 12, 11, 13, 12, 14, 13, 15],
-    '24H': [10, 15, 12, 18, 14, 20, 16, 22],
-    '7D': [10, 20, 15, 25, 18, 28, 22, 30],
-    '30D': [10, 30, 15, 35, 18, 38, 22, 40],
-  };
+  // Generate mock chart data with the last value as the current price
+  const parsedPrice = parseFloat(token.price.replace(/[$,]/g, '')) || 0;
+  const baseChart = [10, 12, 11, 13, 12, 14, 13];
+  const chartWithCurrent = [...baseChart, parsedPrice];
 
   const getPriceChangeColor = (change: number) => {
     if (change > 0) return colors.success;
@@ -66,40 +63,46 @@ export default function TokenDetailScreen() {
   const sellRatio = 100 - buyRatio;
 
   const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: colors.background },
-    headerRow: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: colors.cardBackground, borderBottomWidth: 1, borderBottomColor: colors.border },
-    icon: { width: 44, height: 44, borderRadius: 22, marginRight: 12, backgroundColor: colors.border },
+    container: { flex: 1, backgroundColor: colors.background, paddingBottom: 16 },
+    headerRow: { flexDirection: 'row', alignItems: 'center', padding: 16, backgroundColor: colors.cardBackground, borderBottomWidth: 1, borderBottomColor: colors.border, borderTopLeftRadius: 18, borderTopRightRadius: 18, marginHorizontal: 10, marginTop: 10, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+    icon: { width: 48, height: 48, borderRadius: 24, marginRight: 14, backgroundColor: colors.border },
     nameCol: { flex: 1, justifyContent: 'center' },
-    tokenName: { fontSize: 20, fontWeight: 'bold', color: colors.text },
-    tagline: { fontSize: 14, color: colors.textSecondary, marginTop: 2 },
+    tokenName: { fontSize: 22, fontWeight: 'bold', color: colors.text },
+    tagline: { fontSize: 15, color: colors.textSecondary, marginTop: 2 },
     starButton: { padding: 8 },
-    section: { backgroundColor: colors.cardBackground, borderRadius: 14, margin: 12, padding: 14, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 4, elevation: 1 },
+    section: { backgroundColor: colors.cardBackground, borderRadius: 18, margin: 12, marginTop: 16, padding: 16, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
     statsGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: 4 },
-    statsCell: { width: '33%', alignItems: 'center', marginVertical: 6 },
-    statsLabel: { fontSize: 13, color: colors.textSecondary },
-    statsValue: { fontSize: 16, fontWeight: 'bold', color: colors.text, marginTop: 2 },
+    statsCell: { width: '33%', alignItems: 'center', marginVertical: 8 },
+    statsLabel: { fontSize: 14, color: colors.textSecondary },
+    statsValue: { fontSize: 17, fontWeight: 'bold', color: colors.text, marginTop: 2 },
     chartToggleRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 8, marginBottom: 2, gap: 8 },
-    chartToggle: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, backgroundColor: colors.surface, marginHorizontal: 2 },
+    chartToggle: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, backgroundColor: colors.surface, marginHorizontal: 2 },
     chartToggleActive: { backgroundColor: colors.primary },
-    chartToggleText: { fontSize: 13, color: colors.textSecondary },
+    chartToggleText: { fontSize: 14, color: colors.textSecondary },
     chartToggleTextActive: { color: '#fff' },
-    aboutTitle: { fontSize: 16, fontWeight: 'bold', color: colors.text, marginBottom: 6 },
-    aboutText: { fontSize: 14, color: colors.textSecondary, lineHeight: 20 },
-    showMore: { color: colors.primary, fontWeight: 'bold', marginTop: 6 },
-    linksRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginTop: 4 },
+    chartSection: { alignItems: 'center', justifyContent: 'center', height: 140, marginTop: 8, marginBottom: 8, backgroundColor: colors.surface, borderRadius: 16, borderWidth: 1, borderColor: colors.border, position: 'relative' },
+    chartPriceLabel: { position: 'absolute', right: 16, top: 16, backgroundColor: colors.cardBackground, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2, fontWeight: 'bold', color: colors.primary, fontSize: 15, elevation: 2 },
+    aboutTitle: { fontSize: 17, fontWeight: 'bold', color: colors.text, marginBottom: 8 },
+    aboutText: { fontSize: 15, color: colors.textSecondary, lineHeight: 21 },
+    showMore: { color: colors.primary, fontWeight: 'bold', marginTop: 8 },
+    linksRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 18, marginTop: 4 },
     linkBtn: { flexDirection: 'row', alignItems: 'center', marginRight: 18, marginBottom: 8 },
-    linkText: { fontSize: 15, color: colors.primary, marginLeft: 6 },
+    linkText: { fontSize: 16, color: colors.primary, marginLeft: 6 },
     buySellRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-    buySellLabel: { fontSize: 14, color: colors.textSecondary },
-    buySellValue: { fontSize: 15, fontWeight: 'bold', color: colors.text },
-    buySellBar: { flexDirection: 'row', height: 12, borderRadius: 6, overflow: 'hidden', marginTop: 6, marginBottom: 2 },
-    buyBar: { backgroundColor: colors.success, height: 12 },
-    sellBar: { backgroundColor: colors.error, height: 12 },
-    buySellRatioText: { fontSize: 13, color: colors.textSecondary, marginLeft: 6 },
+    buySellLabel: { fontSize: 15, color: colors.textSecondary },
+    buySellValue: { fontSize: 16, fontWeight: 'bold', color: colors.text },
+    buySellBar: { flexDirection: 'row', height: 14, borderRadius: 7, overflow: 'hidden', marginTop: 8, marginBottom: 2 },
+    buyBar: { backgroundColor: colors.success, height: 14 },
+    sellBar: { backgroundColor: colors.error, height: 14 },
+    buySellRatioText: { fontSize: 14, color: colors.textSecondary, marginLeft: 8 },
   });
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Back Button */}
+      <TouchableOpacity style={{ padding: 12, alignSelf: 'flex-start', marginLeft: 8, marginTop: 8, zIndex: 10 }} onPress={() => router.replace('/')}> 
+        <ArrowLeft size={28} color={colors.text} />
+      </TouchableOpacity>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* App Header */}
         <Header />
@@ -140,9 +143,10 @@ export default function TokenDetailScreen() {
               </TouchableOpacity>
             ))}
           </View>
-          {/* Dummy Graph Placeholder */}
-          <View style={{ alignItems: 'center', justifyContent: 'center', height: 120, marginTop: 8, marginBottom: 8, backgroundColor: colors.surface, borderRadius: 12, borderWidth: 1, borderColor: colors.border }}>
-            <Text style={{ color: colors.textSecondary, fontSize: 16 }}>[Graph Coming Soon]</Text>
+          {/* Clean Sparkline Graph */}
+          <View style={styles.chartSection}>
+            <Sparkline data={chartWithCurrent} color={getPriceChangeColor(token.priceChange24h)} width={260} height={80} />
+            <Text style={styles.chartPriceLabel}>{token.price}</Text>
           </View>
         </View>
 
@@ -157,9 +161,23 @@ export default function TokenDetailScreen() {
           )}
         </View>
 
-        {/* Official Links */}
+        {/* Buy/Sell Activity */}
+        <View style={styles.section}>
+          <View style={styles.buySellRow}>
+            <Text style={styles.buySellLabel}>🟢 Buys (24h): <Text style={styles.buySellValue}>{buyCount}</Text></Text>
+            <Text style={styles.buySellLabel}>🔴 Sells: <Text style={styles.buySellValue}>{sellCount}</Text></Text>
+          </View>
+          <View style={styles.buySellBar}>
+            <View style={[styles.buyBar, { width: `${buyRatio}%` }]} />
+            <View style={[styles.sellBar, { width: `${sellRatio}%` }]} />
+          </View>
+          <Text style={styles.buySellRatioText}>📊 Buy/Sell Ratio: <Text style={{ color: colors.success }}>{buyRatio}%</Text>/<Text style={{ color: colors.error }}>{sellRatio}%</Text></Text>
+        </View>
+
+        {/* Official Links (moved to bottom) */}
         {(token.links?.website || token.links?.twitter || token.links?.telegram) && (
           <View style={styles.section}>
+            <Text style={styles.aboutTitle}>Official Links</Text>
             <View style={styles.linksRow}>
               {token.links.website && (
                 <TouchableOpacity style={styles.linkBtn} onPress={() => handleLinkPress(token.links!.website!)}>
@@ -171,7 +189,7 @@ export default function TokenDetailScreen() {
               {token.links.twitter && (
                 <TouchableOpacity style={styles.linkBtn} onPress={() => handleLinkPress(token.links!.twitter!)}>
                   <Twitter size={20} color={colors.primary} />
-                  <Text style={styles.linkText}>Twitter</Text>
+                  <Text style={styles.linkText}>X</Text>
                   <ExternalLink size={16} color={colors.primary} style={{ marginLeft: 2 }} />
                 </TouchableOpacity>
               )}
@@ -185,19 +203,6 @@ export default function TokenDetailScreen() {
             </View>
           </View>
         )}
-
-        {/* Buy/Sell Activity */}
-        <View style={styles.section}>
-          <View style={styles.buySellRow}>
-            <Text style={styles.buySellLabel}>🟢 Buys (24h): <Text style={styles.buySellValue}>{buyCount}</Text></Text>
-            <Text style={styles.buySellLabel}>🔴 Sells: <Text style={styles.buySellValue}>{sellCount}</Text></Text>
-          </View>
-          <View style={styles.buySellBar}>
-            <View style={[styles.buyBar, { width: `${buyRatio}%` }]} />
-            <View style={[styles.sellBar, { width: `${sellRatio}%` }]} />
-          </View>
-          <Text style={styles.buySellRatioText}>📊 Buy/Sell Ratio: <Text style={{ color: colors.success }}>{buyRatio}%</Text>/<Text style={{ color: colors.error }}>{sellRatio}%</Text></Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
