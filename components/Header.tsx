@@ -1,8 +1,9 @@
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Sun, Moon } from 'lucide-react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
-export function Header() {
+export const Header = memo(() => {
   const { colors, theme, toggleTheme } = useTheme();
 
   const styles = StyleSheet.create({
@@ -50,4 +51,4 @@ export function Header() {
       </TouchableOpacity>
     </View>
   );
-}
+});

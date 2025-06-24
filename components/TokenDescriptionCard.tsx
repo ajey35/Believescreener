@@ -1,7 +1,8 @@
+import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '@/contexts/ThemeContext';
 
-export function TokenDescriptionCard() {
+export const TokenDescriptionCard = memo(() => {
   const { colors } = useTheme();
 
   const styles = StyleSheet.create({
@@ -35,4 +36,4 @@ export function TokenDescriptionCard() {
       </Text>
     </View>
   );
-}
+});

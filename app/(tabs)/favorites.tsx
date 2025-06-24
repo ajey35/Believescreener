@@ -1,5 +1,5 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { View, StyleSheet, FlatList, Text, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '@/components/Header';
 import { SearchBar } from '@/components/SearchBar';
@@ -13,35 +13,28 @@ export default function FavoritesScreen() {
   const { colors } = useTheme();
   const { favorites, isLoading: favoritesLoading } = useFavorites();
   const [favoriteTokens, setFavoriteTokens] = useState<Token[]>([]);
-  const [filteredTokens, setFilteredTokens] = useState<Token[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!favoritesLoading) {
-      loadFavoriteTokens();
-    }
-  }, [favorites, favoritesLoading]);
-
-  useEffect(() => {
-    // Filter tokens based on search query
+  // Memoized filtered tokens
+  const filteredTokens = useMemo(() => {
     if (searchQuery.trim() === '') {
-      setFilteredTokens(favoriteTokens);
-    } else {
-      const filtered = favoriteTokens.filter(token =>
-        token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredTokens(filtered);
+      return favoriteTokens;
     }
+    
+    const query = searchQuery.toLowerCase();
+    return favoriteTokens.filter(token =>
+      token.name.toLowerCase().includes(query) ||
+      token.symbol.toLowerCase().includes(query)
+    );
   }, [searchQuery, favoriteTokens]);
 
-  const loadFavoriteTokens = async () => {
+  const loadFavoriteTokens = useCallback(async () => {
     if (favorites.length === 0) {
       setFavoriteTokens([]);
-      setFilteredTokens([]);
       return;
     }
+    
     setLoading(true);
     try {
       // Get all enriched tokens and filter by favorites
@@ -53,18 +46,18 @@ export default function FavoritesScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [favorites]);
 
-  const handleFilterPress = () => {
+  const handleFilterPress = useCallback(() => {
     // TODO: Implement filter modal for favorites
     console.log('Filter pressed');
-  };
+  }, []);
 
-  const renderTokenCard = ({ item }: { item: Token }) => (
+  const renderTokenCard = useCallback(({ item }: { item: Token }) => (
     <TokenCard token={item} />
-  );
+  ), []);
 
-  const renderHeader = () => (
+  const renderHeader = useCallback(() => (
     <>
       <Header />
       <SearchBar
@@ -73,9 +66,9 @@ export default function FavoritesScreen() {
         onFilterPress={handleFilterPress}
       />
     </>
-  );
+  ), [searchQuery, handleFilterPress]);
 
-  const renderEmpty = () => {
+  const renderEmpty = useCallback(() => {
     if (favoritesLoading || loading) {
       return (
         <View style={styles.loadingContainer}>
@@ -97,7 +90,21 @@ export default function FavoritesScreen() {
         </Text>
       </View>
     );
-  };
+  }, [favoritesLoading, loading, searchQuery, colors]);
+
+  const keyExtractor = useCallback((item: Token) => item.tokenAddress, []);
+
+  const getItemLayout = useCallback((data: any, index: number) => ({
+    length: 68,
+    offset: 68 * index,
+    index,
+  }), []);
+
+  useEffect(() => {
+    if (!favoritesLoading) {
+      loadFavoriteTokens();
+    }
+  }, [favorites, favoritesLoading, loadFavoriteTokens]);
 
   const styles = StyleSheet.create({
     container: {
@@ -136,11 +143,16 @@ export default function FavoritesScreen() {
       <FlatList
         data={filteredTokens}
         renderItem={renderTokenCard}
-        keyExtractor={(item) => item.tokenAddress}
+        keyExtractor={keyExtractor}
         ListHeaderComponent={renderHeader}
         ListEmptyComponent={renderEmpty}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={filteredTokens.length === 0 ? { flex: 1 } : undefined}
+        removeClippedSubviews={true}
+        maxToRenderPerBatch={10}
+        windowSize={10}
+        initialNumToRender={15}
+        getItemLayout={getItemLayout}
       />
     </SafeAreaView>
   );
