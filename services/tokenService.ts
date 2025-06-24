@@ -26,7 +26,6 @@ class TokenService {
       const data = await response.json();
       if (data) {
         if (data.length > 0) {
-          console.log("data",data[0]);
           return data[0];
         }
         return null;
@@ -58,13 +57,9 @@ class TokenService {
       for (const profile of profiles) {
         const tokenData = await this.getTokenData(profile.tokenAddress);
         if (!tokenData) {
-          console.log('token not found', profile.tokenAddress);
-          console.log('profile', profile.chainId);
           continue;
         }
-        // Debug logs (optional, can be removed in production)
-        console.log('tokenData', tokenData);
-        console.log('token name', tokenData.baseToken?.symbol);
+       
 
         // Normalize links
         let website, twitter, telegram;
