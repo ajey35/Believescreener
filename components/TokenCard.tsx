@@ -5,9 +5,30 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useFavorites } from '@/contexts/FavoritesContext';
 import { router } from 'expo-router';
 import { Sparkline } from './Sparkline';
+import Svg, { Path } from 'react-native-svg';
 
 interface TokenCardProps {
   token: Token;
+}
+
+function SimpleSparkline({ data, color, width = 48, height = 20 }: { data: number[]; color: string; width?: number; height?: number }) {
+  if (!data || data.length < 2) return <View style={{ width, height }} />;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((d, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - ((d - min) / range) * height;
+    return `${x},${y}`;
+  }).join(' ');
+  const path = `M ${points}`;
+  return (
+    <View style={{ width, height }}>
+      <Svg width={width} height={height}>
+        <Path d={path} fill="none" stroke={color} strokeWidth="1.5" />
+      </Svg>
+    </View>
+  );
 }
 
 export function TokenCard({ token }: TokenCardProps) {
@@ -226,7 +247,7 @@ export function TokenCard({ token }: TokenCardProps) {
         </Text>
       </View>
       <View style={styles.rowSparkline}>
-        <Sparkline
+        <SimpleSparkline
           data={token.priceChange24h > 0 ? [10, 50, 20, 60, 40, 80] : [80, 40, 60, 20, 50, 10]}
           color={getPriceChangeColor(token.priceChange24h)}
           width={48}
