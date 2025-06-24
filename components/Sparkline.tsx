@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import Svg, { Path, Line, G, Text as SvgText, Defs, LinearGradient, Stop, Polygon } from 'react-native-svg';
+import Svg, { Path, Line, G, Text as SvgText, Defs, LinearGradient, Stop, Circle } from 'react-native-svg';
 
 interface SparklineProps {
   data: number[];
@@ -128,7 +128,7 @@ export function Sparkline({
         <Path d={path} fill="none" stroke={color} strokeWidth="2.5" />
         {/* End point dot */}
         <G>
-          <circle
+          <Circle
             cx={points[points.length - 1].x}
             cy={points[points.length - 1].y}
             r={4}
@@ -140,4 +140,4 @@ export function Sparkline({
       </Svg>
     </View>
   );
-} 
+}
